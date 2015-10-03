@@ -1,4 +1,4 @@
-package com.lendlord.manga1;
+package com.lendlord.manga;
 
 import org.junit.Test;
 
