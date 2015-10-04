@@ -23,14 +23,17 @@ import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Connection con = null;
+    private SocketSend con = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        con = new Connection(this);
+//        con = new Connection(this);
+
+        con = new SocketSend(this);
+        con.execute();
 
         setContentView(R.layout.activity_main);
 
@@ -68,14 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .build();
 
-//        TextView conText = (TextView) findViewById(R.id.textView);
         final EditText editText = (EditText) findViewById(R.id.editText);
-
-//        new Thread(con).start();
-
-//        while(!Thread.currentThread().isInterrupted()){
-//            editText.setText(con.receiveDataFromServer());
-//        }
 
         Button btn = (Button) findViewById(R.id.button);
         btn.setOnClickListener(new View.OnClickListener() {
