@@ -1,15 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:measureAllChildren="false"
+    android:longClickable="false"
+    android:id="@+id/coordinatorLayout">
 
     <include layout="@layout/content_main"
-        android:layout_width="fill_parent"
-        android:layout_alignParentStart="true"
-        android:layout_height="fill_parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp" />
+
+    <!--<ListView-->
+        <!--android:id="@+id/listM"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="fill_parent"-->
+        <!--android:paddingTop="60dp" />-->
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/clayout">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_get_app_24dp"/>
+    </android.support.design.widget.CoordinatorLayout>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -20,24 +45,6 @@
         android:minHeight="?attr/actionBarSize"
         android:paddingTop="@dimen/tool_bar_top_padding"
         android:transitionName="actionBar"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:transitionGroup="false" />
 
-    <!--<ListView-->
-        <!--android:id="@+id/listM"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="fill_parent"-->
-        <!--android:paddingTop="60dp" />-->
-
-    <com.melnykov.fab.FloatingActionButton
-    android:id="@+id/fab"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="bottom|right"
-    android:layout_margin="16dp"
-    android:src="@android:drawable/ic_dialog_email"
-    fab:fab_colorNormal="@color/primary"/>
-    <!--fab:fab_colorPressed="@color/primary_pressed"-->
-    <!--fab:fab_colorRipple="@color/ripple" />-->
-
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

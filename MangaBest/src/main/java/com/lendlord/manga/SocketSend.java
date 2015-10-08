@@ -11,7 +11,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 /**
  * Created by lendlord on 03.10.15.
@@ -21,6 +20,9 @@ public class SocketSend extends AsyncTask<Void, String, Void>{
     private Socket socket;
     private static final int SERVERPORT = 8081;
     private static final String SERVER_IP = "81.88.221.123";
+
+    PrintWriter output;
+    BufferedReader input;
 
     private MainActivity parentActivity = null;
 
@@ -34,8 +36,9 @@ public class SocketSend extends AsyncTask<Void, String, Void>{
         try {
             serverAddr = InetAddress.getByName(SERVER_IP);
             socket = new Socket(serverAddr, SERVERPORT);
-            BufferedReader input = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-            while (true){
+            input = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+            while (!Thread.currentThread().isInterrupted()){
                 String read = input.readLine();
                 publishProgress(read);
             }
@@ -61,13 +64,7 @@ public class SocketSend extends AsyncTask<Void, String, Void>{
 
     public boolean send(String data){
         if (socket == null || !socket.isConnected())  return false;
-        try {
-            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-            out.println(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        output.println(data);
         return true;
     }
 
