@@ -1,28 +1,40 @@
 package com.lendlord.manga;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.Toast;
+import android.view.animation.OvershootInterpolator;
 
+import com.dexafree.materialList.card.Card;
+import com.dexafree.materialList.view.IMaterialListAdapter;
+import com.dexafree.materialList.view.MaterialListAdapter;
+import com.dexafree.materialList.view.MaterialListView;
+import com.mikepenz.materialdrawer.Drawer;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
-import it.gmariotti.cardslib.library.cards.actions.BaseSupplementalAction;
-import it.gmariotti.cardslib.library.cards.actions.IconSupplementalAction;
-import it.gmariotti.cardslib.library.cards.material.MaterialLargeImageCard;
-import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
-import it.gmariotti.cardslib.library.internal.CardHeader;
-import it.gmariotti.cardslib.library.recyclerview.internal.CardArrayRecyclerViewAdapter;
-import it.gmariotti.cardslib.library.recyclerview.view.CardRecyclerView;
-import it.gmariotti.cardslib.library.view.CardListView;
-import it.gmariotti.cardslib.library.view.CardViewNative;
+import jp.wasabeef.recyclerview.animators.FadeInAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
+import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
+
 
 public class Catalog extends AppCompatActivity{
+
+    private Drawer drawerResult = null;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,65 +43,61 @@ public class Catalog extends AppCompatActivity{
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        CustomNavigationDrawer customNavigationDrawer = new CustomNavigationDrawer();
+        drawerResult = customNavigationDrawer.BuildCustomDrawer(this);
+        drawerResult.setSelection(2, false);
 
-        ArrayList<Card> cards = new ArrayList<Card>();
+        MaterialListView mListView = (MaterialListView) findViewById(R.id.material_listview);
 
-        CardArrayRecyclerViewAdapter mCardArrayAdapter = new CardArrayRecyclerViewAdapter(this, cards);
+        File sdPath = Environment.getExternalStorageDirectory();
 
-        CardRecyclerView mRecyclerView = (CardRecyclerView) this.findViewById(R.id.myCardList);
-        mRecyclerView.setHasFixedSize(false);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        if (mRecyclerView != null) {
-            mRecyclerView.setAdapter(mCardArrayAdapter);
+        Bitmap bitmap;
+        ArrayList<BitmapDrawable> bitmapDrawables = new ArrayList<BitmapDrawable>();
+        ArrayList<String> titles = new ArrayList<String>();
+        FileDataHandler fileDataHandler = new FileDataHandler();
+        List<File> files = fileDataHandler.getListFiles(new File(sdPath.getAbsolutePath() + "/MangaBest/"));
+        for (File file : files) {
+            bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
+            bitmapDrawables.add(bitmapDrawable);
+            titles.add(file.getName().replace(".jpg",""));
         }
 
-        for (int i = 0; i < 200; i++) {
-
-            // Set supplemental actions as icon
-            ArrayList<BaseSupplementalAction> actions = new ArrayList<BaseSupplementalAction>();
-
-            IconSupplementalAction t1 = new IconSupplementalAction(this, R.id.text1);
-            t1.setOnActionClickListener(new BaseSupplementalAction.OnActionClickListener() {
-                @Override
-                public void onClick(Card card, View view) {
-                    Toast.makeText(getApplicationContext(), " Click on Text SHARE ",Toast.LENGTH_SHORT).show();
-                }
-            });
-            actions.add(t1);
-
-            IconSupplementalAction t2 = new IconSupplementalAction(this, R.id.text2);
-            t2.setOnActionClickListener(new BaseSupplementalAction.OnActionClickListener() {
-                @Override
-                public void onClick(Card card, View view) {
-                    Toast.makeText(getApplicationContext()," Click on Text LEARN ",Toast.LENGTH_SHORT).show();
-                }
-            });
-            actions.add(t2);
-
-            MaterialLargeImageCard card =
-                    MaterialLargeImageCard.with(this)
-                            .setTextOverImage("Italian Beaches are pretty cool and exciting")
-                            .setTitle("This is my favorite local beach ")
-                            .setSubTitle("A wonderful place")
-                            .useDrawableId(R.drawable.header)
-                            .setupSupplementalActions(R.layout.manga_card, actions)
-                            .build();
-            cards.add(card);
+        Random r = new Random();
+        int rnd = 0;
+        for (int i=0; i<200; i++) {
+            rnd = r.nextInt(bitmapDrawables.size());
+            Card card = new Card.Builder(this)
+                    .setTag("BIG_IMAGE_CARD")
+                    .withProvider(MangaLibCardProvider.class)
+                    .setTitle(titles.get(rnd))
+                    .setDescription(String.valueOf(rnd)+"/10")
+                    .setDrawable(bitmapDrawables.get(rnd))
+                    .endConfig()
+                    .build();
+            mListView.add(card);
         }
 
-        mCardArrayAdapter.addAll(cards);
-
-//        CardViewNative cardView = (CardViewNative) findViewById(R.id.carddemo_largeimage);
-//        cardView.setCard(card);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.material_listview);
+//        MaterialListAdapter adapter = new MaterialListAdapter();
+        recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f)));
 
     }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerResult.isDrawerOpen()) {
+            drawerResult.closeDrawer();
+        }else{
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        drawerResult.setSelection(2, false);
+    }
+
+
 }

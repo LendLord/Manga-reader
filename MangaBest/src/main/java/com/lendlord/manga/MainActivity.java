@@ -69,73 +69,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Create the AccountHeader
-        AccountHeader headerResult = new AccountHeaderBuilder()
-                .withActivity(this)
-                .withHeaderBackground(R.drawable.header)
-                .addProfiles(
-                        new ProfileDrawerItem().withName("Lend Lord").withEmail("lendlord07@gmail.com").withIcon(getResources().getDrawable(R.drawable.profile))
-                )
-                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                    @Override
-                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
-                        return false;
-                    }
-                })
-                .build();
-
-
-        //create the drawer and remember the `Drawer` result object
-        drawerResult = new DrawerBuilder()
-                .withActivity(this)
-                .withToolbar(toolbar)
-                .withActionBarDrawerToggleAnimated(true)
-                .withHeader(R.layout.drawer_header)
-                .withAccountHeader(headerResult)
-                .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_home).withIcon(FontAwesome.Icon.faw_home).withBadge("99").withIdentifier(1),
-                        new PrimaryDrawerItem().withName("Каталог").withIdentifier(2).withTag("Catalog"),
-                        new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings)
-                )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        if (drawerItem instanceof Nameable) {
-
-                            if (drawerItem.getTag() != null && drawerItem.getTag().equals("Catalog")){
-                                Intent intent = new Intent(getApplicationContext(), Catalog.class);
-                                startActivity(intent);
-                            }
-                            Context context = getApplicationContext();
-                            CharSequence text =  String.valueOf(drawerItem.getTag());
-                            int duration = Toast.LENGTH_SHORT;
-
-                            Toast toast = Toast.makeText(context, text, duration);
-                            toast.show();
-                        }
-                        return false;
-                    }
-                })
-                .withOnDrawerListener(new Drawer.OnDrawerListener() {
-                    @Override
-                    public void onDrawerOpened(View drawerView) {
-                        InputMethodManager inputMethodManager = (InputMethodManager) MainActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                        inputMethodManager.hideSoftInputFromWindow(MainActivity.this.getCurrentFocus().getWindowToken(), 0);
-                    }
-
-                    @Override
-                    public void onDrawerClosed(View drawerView) {
-
-                    }
-
-                    @Override
-                    public void onDrawerSlide(View drawerView, float slideOffset) {
-
-                    }
-                })
-                .addStickyDrawerItems(new PrimaryDrawerItem().withName("StickyFooterItem"))
-                .build();
+        CustomNavigationDrawer customNavigationDrawer = new CustomNavigationDrawer();
+        drawerResult = customNavigationDrawer.BuildCustomDrawer(this);
+        drawerResult.setSelection(1, false);
 
         final EditText editText = (EditText) findViewById(R.id.editText);
 
@@ -194,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        drawerResult.setSelection(1,false);
     }
 
     @Override
@@ -216,5 +153,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void openLibrary(){
+        Intent intent = new Intent(MainActivity.this, Catalog.class);
+        startActivity(intent);
     }
 }
