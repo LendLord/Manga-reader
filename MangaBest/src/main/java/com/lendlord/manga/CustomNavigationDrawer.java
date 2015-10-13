@@ -1,7 +1,6 @@
 package com.lendlord.manga;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -9,6 +8,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.lendlord.manga.MangaLibrary.Library;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -21,8 +21,6 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
-
-import java.util.Objects;
 
 /**
  * Created by lendlord on 09.10.15.
@@ -37,7 +35,7 @@ public class CustomNavigationDrawer extends AppCompatActivity{
         // Create the AccountHeader
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(parentActivity)
-                .withHeaderBackground(R.drawable.header)
+                .withHeaderBackground(R.drawable.dark_header)
                 .addProfiles(
                         new ProfileDrawerItem().withName("Lend Lord").withEmail("lendlord07@gmail.com").withIcon(parentActivity.getResources().getDrawable(R.drawable.profile))
                 )
@@ -59,7 +57,7 @@ public class CustomNavigationDrawer extends AppCompatActivity{
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.drawer_item_home).withIcon(FontAwesome.Icon.faw_home).withBadge("99").withTag("Main").withIdentifier(1),
-                        new PrimaryDrawerItem().withName("Каталог").withIdentifier(2).withTag("Catalog"),
+                        new PrimaryDrawerItem().withName("Каталог").withIdentifier(2).withTag("Library"),
                         new DividerDrawerItem(),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_settings)
                 )
@@ -68,17 +66,22 @@ public class CustomNavigationDrawer extends AppCompatActivity{
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         if (drawerItem instanceof Nameable) {
 
-                            if (drawerItem.getTag() != null && drawerItem.getTag().equals("Catalog")) {
-                                Intent intent = new Intent(parentActivity.getApplicationContext(), Catalog.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                                parentActivity.startActivity(intent);
+                            Class nextActivity = null;
+                            if (drawerItem.getTag() == null) return false;
+
+                            if (drawerItem.getTag().equals("Library")) {
+                                nextActivity = Library.class;
                             }
 
                             if (drawerItem.getTag() != null && drawerItem.getTag().equals("Main")) {
-                                Intent intent = new Intent(parentActivity.getApplicationContext(), MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                                parentActivity.startActivity(intent);
+                                nextActivity = MainActivity.class;
                             }
+
+                            if (parentActivity.getClass() == nextActivity || nextActivity == null) return false;
+                            Intent intent = new Intent(parentActivity.getApplicationContext(), nextActivity);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                            parentActivity.startActivity(intent);
+                            if (!parentActivity.getClass().getSimpleName().equals("MainActivity")) parentActivity.finish();
 
                             CharSequence text = String.valueOf(drawerItem.getTag());
                             int duration = Toast.LENGTH_SHORT;

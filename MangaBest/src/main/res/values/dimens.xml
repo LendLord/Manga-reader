@@ -6,4 +6,6 @@
     <dimen name="title_size">16sp</dimen>
     <dimen name="bigger_title_size">16sp</dimen>
     <dimen name="description_size">8sp</dimen>
+    <dimen name="app_bar_height">280dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>

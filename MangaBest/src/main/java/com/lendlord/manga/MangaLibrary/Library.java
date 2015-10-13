@@ -1,4 +1,4 @@
-package com.lendlord.manga;
+package com.lendlord.manga.MangaLibrary;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,32 +9,31 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.animation.OvershootInterpolator;
 
 import com.dexafree.materialList.card.Card;
-import com.dexafree.materialList.view.IMaterialListAdapter;
-import com.dexafree.materialList.view.MaterialListAdapter;
+import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 import com.dexafree.materialList.view.MaterialListView;
+import com.lendlord.manga.CustomNavigationDrawer;
+import com.lendlord.manga.FileDataHandler;
+import com.lendlord.manga.MangaLibrary.MangaLibCardProvider;
+import com.lendlord.manga.MangaViewer.MangaViewer;
+import com.lendlord.manga.R;
 import com.mikepenz.materialdrawer.Drawer;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import jp.wasabeef.recyclerview.animators.FadeInAnimator;
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
-import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
-import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 
-public class Catalog extends AppCompatActivity{
+public class Library extends AppCompatActivity{
 
     private Drawer drawerResult = null;
-
-
+    private Library library = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +45,8 @@ public class Catalog extends AppCompatActivity{
         CustomNavigationDrawer customNavigationDrawer = new CustomNavigationDrawer();
         drawerResult = customNavigationDrawer.BuildCustomDrawer(this);
         drawerResult.setSelection(2, false);
+
+        library = this;
 
         MaterialListView mListView = (MaterialListView) findViewById(R.id.material_listview);
 
@@ -68,15 +69,31 @@ public class Catalog extends AppCompatActivity{
         for (int i=0; i<200; i++) {
             rnd = r.nextInt(bitmapDrawables.size());
             Card card = new Card.Builder(this)
-                    .setTag("BIG_IMAGE_CARD")
+                    .setTag(titles.get(rnd))
                     .withProvider(MangaLibCardProvider.class)
                     .setTitle(titles.get(rnd))
-                    .setDescription(String.valueOf(rnd)+"/10")
+                    .setDescription(String.valueOf(rnd) + "/10")
                     .setDrawable(bitmapDrawables.get(rnd))
                     .endConfig()
                     .build();
             mListView.add(card);
         }
+
+        mListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(Card card, int position) {
+                Intent intent = new Intent(library, MangaViewer.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                intent.putExtra("MangaName", card.getTag().toString());
+                library.startActivity(intent);
+            }
+
+            @Override
+            public void onItemLongClick(Card card, int position) {
+                Log.d("LONG_CLICK", card.getTag().toString());
+            }
+        });
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.material_listview);
 //        MaterialListAdapter adapter = new MaterialListAdapter();
@@ -97,6 +114,11 @@ public class Catalog extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
         drawerResult.setSelection(2, false);
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
     }
 
 

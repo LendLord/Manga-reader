@@ -9,6 +9,9 @@
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/cardView"
         card_view:cardCornerRadius="@dimen/card_corner_radius"
+        card_view:cardBackgroundColor="@android:color/black"
+        card_view:cardElevation="7dp"
+        card_view:cardUseCompatPadding="true"
         style="@style/MainCardView">
 
         <RelativeLayout
@@ -27,13 +30,15 @@
             <TextView
                 style="@style/CardTitle"
                 android:layout_alignBottom="@+id/imageView"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
                 android:id="@+id/titleTextView"
                 android:background="#acffffff"
                 android:textSize="12sp"
-                android:paddingLeft="1dp"
                 android:singleLine="true"
-                android:gravity="center"
-                android:paddingTop="3dp"
+                android:gravity="bottom|left"
+                android:padding="2dp"
+                android:textColor="@color/md_black_1000"
                 tools:text="Title"/>
 
             <TextView
